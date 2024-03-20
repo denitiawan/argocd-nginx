@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: ConfigMap
 metadata:
-  name: nginx-configmap
+  name: nginx
   namespace: my-application
 data:
   nginx.conf: |
