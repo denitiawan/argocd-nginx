@@ -1,9 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:
-  labels:
-    app: nginx
-  name: nginx
+metadata:  
+  name: nginx-deployment
   namespace: my-application
 spec:
   replicas: 1
@@ -23,9 +21,6 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
       volumes:
-        - name: nginx-conf
+        - name: nginx-config-volume
         configMap:
-          name: nginx-conf  
-          items:
-            - key: nginx.conf  
-              path: nginx.conf  
+          name: nginx-config            
