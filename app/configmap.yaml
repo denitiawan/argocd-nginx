@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: ConfigMap
 metadata:
-  name: nginx
+  name: nginx-conf  
   namespace: my-application
 data:
   nginx.conf: |
-    worker_processes 1;
+    worker_processes ;
 
     events {
         worker_connections 1024;
