@@ -15,7 +15,7 @@ spec:
         app: nginx
     spec:
       containers:
-        - image: denitiawan/argocd-nginx:latest
+        - image: nginx
           name: nginx
           ports:
            - containerPort: 80
