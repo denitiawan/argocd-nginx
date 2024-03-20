@@ -17,11 +17,4 @@ spec:
       containers:
         - image: nginx
           name: nginx
-          volumeMounts:  
-            - name: nginx-config
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-      volumes:
-        - name: nginx-config-volume
-          configMap:
-            name: nginx-config  
+          
