@@ -4,6 +4,107 @@ metadata:
   labels:
     app: nginx
   name: nginx
+data:
+  nginx.conf: |
+    
+        # [worker_processes auto] dalam konfigurasi Nginx
+        # menentukan jumlah proses pekerja yang akan digunakan oleh
+        # Nginx untuk menangani koneksi dan permintaan. Pengaturan auto
+        # akan memungkinkan Nginx untuk menentukan jumlah proses pekerja
+        # secara otomatis berdasarkan jumlah inti CPU yang tersedia pada sistem.
+        worker_processes auto;
+
+        events {
+            # [worker_connections] adalah directive dalam konfigurasi Nginx yang menentukan jumlah maksimum koneksi yang dapat ditangani oleh satu worker proses.
+            worker_connections 1024;
+        }
+
+        http {
+            include /etc/nginx/mime.types;
+            default_type application/octet-stream;
+
+
+            # [log_format] untuk mengatur format logger pada log nginx
+            log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+            # [access_log] lokasi dari file log nginx
+            access_log /var/log/nginx/access.log main;
+
+            sendfile on;
+            tcp_nopush on;
+            tcp_nodelay on;
+            keepalive_timeout 65;
+            types_hash_max_size 2048;
+
+            # [GROUP : MAIN]-----------------------------------------------------------------
+            # [upstream] dalam konfigurasi Nginx digunakan untuk mendefinisikan grup server
+            # yang akan melayani permintaan. Ini berguna saat Anda ingin melakukan load balancing
+            # atau proxying permintaan HTTP ke beberapa server belakang (backend servers).
+            upstream main {
+                # automate round robin concepts		
+                server service/main-service:8080;				
+            }
+
+            server {
+                listen 80;
+                server_name localhost;
+
+                location / {
+                    proxy_pass http://main;
+                    proxy_redirect off;
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                }
+            }
+
+            # [GROUP : PROMO]-----------------------------------------------------------------
+            upstream promotion {
+                # automate round robin concepts
+                server service/promotion-service:8080;				
+        
+            }
+
+            server {
+                   listen 80;
+                   server_name promotion.localhost;
+
+                   location / {
+                       proxy_pass http://promotion;
+                       proxy_redirect off;
+                       proxy_set_header Host $host;
+                       proxy_set_header X-Real-IP $remote_addr;
+                       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                       proxy_set_header X-Forwarded-Proto $scheme;
+                   }
+            }
+
+            # [GROUP : SEARCH]-----------------------------------------------------------------
+            upstream search {
+                # automate round robin concepts        
+		        server service/search-service:8080;						
+            }
+
+            server {
+                      listen 80;
+                      server_name search.localhost;
+
+                      location / {
+                          proxy_pass http://search;
+                          proxy_redirect off;
+                          proxy_set_header Host $host;
+                          proxy_set_header X-Real-IP $remote_addr;
+                          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                          proxy_set_header X-Forwarded-Proto $scheme;
+                      }
+               }
+  
+        }
+
+---  
 spec:
   replicas: 1
   selector:
