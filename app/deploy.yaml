@@ -28,7 +28,7 @@ spec:
         configMap:
           name: nginx-configmap
 ---
-apiVersion: v1
+apiVersion: apps/v1
 kind: ConfigMap
 metadata:
   name: nginx-configmap
@@ -41,11 +41,18 @@ data:
     }
 
     http {
-        server {
+    
+        upstream main {
+            # automate round robin concepts			
+            server service/main-service:8080;				
+        }
+        
+        server {            
             listen 80;
+            server_name localhost;
 
             location / {
-                proxy_pass http://kubernetes-backend;
+                proxy_pass http://main;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
