@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:  
-  name: nginx-deployment
-  namespace: my-application
+  name: nginx
 spec:
   replicas: 1
   selector:
@@ -16,11 +15,11 @@ spec:
       containers:
         - image: nginx
           name: nginx
-          volumeMounts:   # This line should be indented under "containers"
+          volumeMounts:  
             - name: nginx-config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
       volumes:
         - name: nginx-config-volume
           configMap:
-            name: nginx-config
+            name: nginx-config  
