@@ -17,3 +17,5 @@ spec:
       containers:
         - image: denitiawan/argocd-nginx:latest
           name: nginx
+          ports:
+           - containerPort: 80
